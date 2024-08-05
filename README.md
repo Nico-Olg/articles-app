@@ -19,14 +19,14 @@ Article App is a simple Flutter application that displays a list of articles fro
 - Toggle between light and dark modes.
 
 ## Requirements
-- Flutter SDK
-- Dart SDK
+- Flutter SDK 3.22
+- Dart SDK 3.4
 
 ## Setup
 
 ### Clone the Repository
 ```bash
-git clone https://github.com/yourusername/article_app.git
+git clone https://github.com/Nico-Olg/articles-app.git
 cd article_app
 ```
 
@@ -60,7 +60,6 @@ The BLoC (Business Logic Component) pattern is used for managing the state of th
 ### Dependency Injection
 The `get_it` package is used for dependency injection to manage and inject dependencies throughout the application. This helps in decoupling the classes and makes testing easier.
 
-## Challenges Faced
 
 ### Type Issues with Mocking
 During testing, there were issues with type compatibility while mocking classes. Ensuring correct types and properly mocking the dependencies resolved these issues.
@@ -71,7 +70,4 @@ Implementing the card layout with the `Swiper` widget presented layout issues. P
 ### Dark Mode Implementation
 Implementing dark mode required careful handling of text and background colors to ensure readability and consistency across different themes.
 
-## Conclusion
-This project demonstrates the use of Flutter with BLoC for state management and hexagonal architecture for a clean separation of concerns. The implementation of dark mode and the use of custom widgets like `Swiper` add to the application's functionality and user experience.
 
-For any issues or contributions, feel free to open a pull request or an issue on the repository. Happy coding!
