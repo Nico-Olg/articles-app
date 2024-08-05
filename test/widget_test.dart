@@ -1,38 +1,45 @@
 import 'package:article_app/src/domain/entities/fetch_article.dart';
-import 'package:flutter/material.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:article_app/main.dart';
-import 'package:article_app/src/core/di/dependency_injection.dart'  as di;
-import 'package:article_app/src/data/repositories/article_repository.dart';
-import 'package:article_app/src/presentation/blocs/article_bloc/article_bloc.dart';
 import 'package:mockito/mockito.dart';
-import 'package:article_app/src/data/models/article_model.dart';
+import 'package:mockito/annotations.dart';
+import 'package:article_app/src/presentation/blocs/article_bloc/article_bloc.dart';
+import 'package:article_app/src/domain/entities/article.dart';
+import 'presentation/blocs/article_bloc/article_bloc_test.mocks.dart';
 
-// Mock de ArticleRepository
-class MockArticleRepository extends Mock implements ArticleRepository {}
-
+@GenerateMocks([FetchArticles])
 void main() {
-  setUpAll(() {
-    di.sl.reset();
-    di.init();
+  late ArticleBloc articleBloc;
+  late MockFetchArticles mockFetchArticles;
 
-    final mockArticleRepository = MockArticleRepository();
-    when(mockArticleRepository.fetchArticles()).thenAnswer((_) async => [
-      ArticleModel(id: 1, title: 'Test Article', body: 'This is a test article', userId: 2)
-    ]);
-
-    di.sl.unregister<ArticleRepository>();
-    di.sl.registerSingleton<ArticleRepository>(mockArticleRepository);
-    di.sl.unregister<ArticleBloc>();
-    di.sl.registerFactory(() => ArticleBloc(di.sl<ArticleRepository>() as FetchArticles));
+  setUp(() {
+    mockFetchArticles = MockFetchArticles();
+    articleBloc = ArticleBloc(mockFetchArticles);
   });
 
-  testWidgets('Articles list displays correctly', (WidgetTester tester) async {
-    await tester.pumpWidget(MyApp());
+  blocTest<ArticleBloc, ArticleState>(
+    'emits [ArticleLoading, ArticleLoaded] when LoadArticles is added.',
+    build: () {
+      when(mockFetchArticles()).thenAnswer((_) async => [Article(id: 1, title: 'Test', body: 'Test Body', userId: 1)]);
+      return articleBloc;
+    },
+    act: (bloc) => bloc.add(LoadArticles()),
+    expect: () => [
+      ArticleLoading(),
+      ArticleLoaded([Article(id: 1, title: 'Test', body: 'Test Body', userId: 1)])
+    ],
+  );
 
-    await tester.pumpAndSettle();
-
-    expect(find.byType(ListView), findsOneWidget);
-    expect(find.byType(ListTile), findsWidgets);
-  });
+  blocTest<ArticleBloc, ArticleState>(
+    'emits [ArticleLoading, ArticleError] when LoadArticles is added and an exception is thrown.',
+    build: () {
+      when(mockFetchArticles()).thenThrow(Exception('Failed to load articles'));
+      return articleBloc;
+    },
+    act: (bloc) => bloc.add(LoadArticles()),
+    expect: () => [
+      ArticleLoading(),
+      ArticleError('Exception: Failed to load articles')
+    ],
+  );
 }
