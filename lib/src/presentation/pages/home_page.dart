@@ -1,3 +1,4 @@
+import 'package:article_app/src/presentation/pages/article_detail_page.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,7 +44,12 @@ class HomePage extends StatelessWidget {
                     final article = state.articles[index];
                     return GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/detail', arguments: article);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ArticleDetailPage(article: article),
+                          ),
+                        );
                       },
                       child: Hero(
                         tag: 'swiper-${article.id}',
